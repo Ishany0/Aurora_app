@@ -144,13 +144,15 @@ Aurora includes client-side speech dictation designed for optional zero-pressure
 
 ---
 
-## 🔒 Security & Privacy
+## Security and secrets
 
-- **Strict Owner-Isolated Rules**: Firestore security rules restrict all read, write, and delete operations to `/users/{request.auth.uid}/...`. Cross-tenant data access is blocked at the database engine level.
-- **Zero Hardcoded Secrets**: Sensitive API keys (`GEMINI_API_KEY`) reside exclusively in **Google Cloud Secret Manager** and are dynamically bound to the Cloud Run service at deployment time.
-- **Zero Third-Party Telemetry**: Raw reflections and personal notes are never transmitted to third-party marketing pixels, analytics trackers, or public training sets.
-- **Complete Session Purging**: Signing out immediately clears all client-side React state (`entries`, `corrections`, `settings`) and unbinds active Firestore snapshot listeners.
-- **Full Data Portability & Erasure**: Users can download their complete history as structured JSON or Markdown, or wipe their account and all subcollections with one click.
+- Gemini and other server-only API keys are stored in Google Secret Manager and injected
+  into Cloud Run only at runtime.
+- No server-only secrets are included in frontend code, browser bundles, or this repository.
+- Firebase web configuration is public client configuration; Firestore and Storage access is
+  enforced with owner-isolation security rules.
+- `.env` files are excluded from version control. Use `.env.example` for local setup.
+- If a credential is ever exposed, it must be revoked/rotated immediately.
 
 ### Firestore Security Rules Baseline
 

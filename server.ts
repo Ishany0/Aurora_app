@@ -56,10 +56,12 @@ function rateLimitMiddleware(req: express.Request, res: express.Response, next: 
 // ----------------------------------------------------------------------------
 
 app.get("/api/health", (_req, res) => {
+  const apiKey = process.env.GEMINI_API_KEY;
+  const isConfigured = Boolean(apiKey && apiKey !== "replace_with_secret_manager_in_production" && apiKey !== "MY_GEMINI_API_KEY");
   res.json({
     status: "ok",
     service: "Aurora Private Reflection API",
-    geminiConfigured: Boolean(process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== "MY_GEMINI_API_KEY"),
+    geminiConfigured: isConfigured,
     timestamp: new Date().toISOString(),
   });
 });
@@ -195,9 +197,9 @@ app.post("/api/reflect", rateLimitMiddleware, async (req, res) => {
       actionStatus: actionResult ? "available" : "unavailable",
     });
   } catch (error: any) {
-    console.error("Unexpected error during reflection pipeline:", error?.message || error);
-    return res.status(500).json({
-      error: "AI service temporarily unavailable.",
+    console.error("Reflection pipeline unavailable:", error instanceof Error ? error.message : "AI service error");
+    return res.status(503).json({
+      error: "AI service is temporarily unavailable. Please try again.",
     });
   }
 });
@@ -375,12 +377,12 @@ app.get("/api/ping-ladder", async (_req, res) => {
     const result = await pingModelLadder();
     res.json(result);
   } catch (error: any) {
-    console.error("Error pinging model ladder:", error?.message || error);
-    res.status(500).json({
+    console.error("Error pinging model ladder:", error?.message ? "AI Service Error" : "Unknown error");
+    res.status(503).json({
       success: false,
       modelTested: "gemini-3.7-flash",
       latencyMs: 0,
-      status: `Ping error: ${error?.message || error}`,
+      status: "AI service is temporarily unavailable. Please try again.",
     });
   }
 });

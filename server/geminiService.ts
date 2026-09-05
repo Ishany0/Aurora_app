@@ -5,13 +5,15 @@ import type { MoodSignalResult, ReflectionResult, ActionItem, WeeklyInsightResul
 let aiClient: GoogleGenAI | null = null;
 
 function getAiClient(): GoogleGenAI {
+  const geminiApiKey = process.env.GEMINI_API_KEY;
+  if (!geminiApiKey || geminiApiKey === "replace_with_secret_manager_in_production" || geminiApiKey === "MY_GEMINI_API_KEY") {
+    console.error("Missing required server configuration: GEMINI_API_KEY");
+    throw new Error("AI service is not configured");
+  }
+
   if (!aiClient) {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      console.warn("GEMINI_API_KEY is not set. Using mock/resilient local reflection mode.");
-    }
     aiClient = new GoogleGenAI({
-      apiKey: apiKey || "dummy-key-for-local-fallback",
+      apiKey: geminiApiKey,
       httpOptions: {
         headers: {
           "User-Agent": "aistudio-build",
@@ -41,11 +43,6 @@ export async function generateWithFallback(
     temperature?: number;
   }
 ): Promise<string> {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey || apiKey === "MY_GEMINI_API_KEY") {
-    throw new Error("NO_API_KEY");
-  }
-
   const client = getAiClient();
   let lastError: Error | null = null;
 
@@ -80,7 +77,7 @@ export async function generateWithFallback(
         return text.trim();
       }
     } catch (err: any) {
-      console.warn(`[Gemini Fallback] Model ${model} encountered error:`, err?.message || err);
+      console.warn(`[Gemini Fallback] Model ${model} unavailable, trying next model.`);
       lastError = err instanceof Error ? err : new Error(String(err));
       // Continue to next model in the fallback ladder
     }
@@ -638,7 +635,8 @@ EXPLAINABILITY DIRECTIVE & PRIVACY CONSTRAINTS:
  * Live Model Ladder Inspection and Health Reporting for Judges & Devs
  */
 export function getModelLadderInfo() {
-  const hasKey = Boolean(process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== "MY_GEMINI_API_KEY");
+  const apiKey = process.env.GEMINI_API_KEY;
+  const hasKey = Boolean(apiKey && apiKey !== "replace_with_secret_manager_in_production" && apiKey !== "MY_GEMINI_API_KEY");
   return {
     primaryModel: MODEL_LADDER[0],
     fallbackLadder: MODEL_LADDER,
@@ -664,12 +662,12 @@ export async function pingModelLadder(): Promise<{
 }> {
   const startTime = Date.now();
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey || apiKey === "MY_GEMINI_API_KEY") {
+  if (!apiKey || apiKey === "replace_with_secret_manager_in_production" || apiKey === "MY_GEMINI_API_KEY") {
     return {
-      success: true,
-      modelTested: "local-resilience-fallback",
-      latencyMs: Date.now() - startTime + 5,
-      status: "Local Resilience Fallback Active (Zero Cloud Key)",
+      success: false,
+      modelTested: MODEL_LADDER[0],
+      latencyMs: Date.now() - startTime,
+      status: "AI service is not configured (GEMINI_API_KEY missing in environment)",
     };
   }
 
@@ -697,7 +695,7 @@ export async function pingModelLadder(): Promise<{
       success: false,
       modelTested: MODEL_LADDER[0],
       latencyMs: Date.now() - startTime,
-      status: `Model unreachable: ${err?.message || err}`,
+      status: "AI service connection error",
     };
   }
 }

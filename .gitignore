@@ -1,16 +1,23 @@
-# Dependencies & Build Outputs
+# Secrets
+.env
+.env.local
+.env.production
+.env.development
+.env.*.local
+.envrc
+*.pem
+*.key
+serviceAccountKey.json
+firebase-adminsdk*.json
+
+# Local and build files
 node_modules/
 dist/
 build/
 coverage/
-
-# Logs & Temporary Files
 *.log
 .DS_Store
 
-# Environment Variables & Secrets
-.env
-.env.local
-.env.*.local
-.env*
+# Keep example template
 !.env.example
+

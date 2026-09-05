@@ -1,0 +1,51 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // User root document & owner-isolated subcollections
+    match /users/{userId} {
+      allow read, create, update, delete: if request.auth != null
+        && request.auth.uid == userId;
+
+      // User private journal entries
+      match /entries/{entryId} {
+        allow read, create, update, delete: if request.auth != null
+          && request.auth.uid == userId;
+      }
+
+      // Mood tag corrections subcollection
+      match /corrections/{correctionId} {
+        allow read, create, update, delete: if request.auth != null
+          && request.auth.uid == userId;
+      }
+
+      // Next-step action items subcollection
+      match /actions/{actionId} {
+        allow read, create, update, delete: if request.auth != null
+          && request.auth.uid == userId;
+      }
+
+      // Weekly pattern & insight digest subcollection
+      match /insights/{insightId} {
+        allow read, create, update, delete: if request.auth != null
+          && request.auth.uid == userId;
+      }
+
+      // User settings & companion configuration
+      match /settings/{settingId} {
+        allow read, create, update, delete: if request.auth != null
+          && request.auth.uid == userId;
+      }
+    }
+
+    // Admin aggregate path: strictly denied to standard clients
+    match /admin_aggregates/{docId} {
+      allow read, write: if false;
+    }
+  }
+}

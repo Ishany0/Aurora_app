@@ -1,0 +1,11 @@
+{
+  "name": "Remix Remix Aurora — Private Multimodal Reflection",
+  "description": "Private, multimodal reflection workspace that transforms text, voice, and photo entries into empathetic reflections, structured mood insights, and manageable actions.",
+  "requestFramePermissions": [
+    "microphone",
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

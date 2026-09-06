@@ -11,7 +11,7 @@
 [![React 19](https://img.shields.io/badge/React-19.0-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
-[🌐 **Live Demo**](https://ais-dev-wuo2gdbdhq7aa4ie75xoms-874611223113.asia-southeast1.run.app) &nbsp;|&nbsp; [💻 **Source Code**](https://github.com/Ishany0/Aurora_app) &nbsp;|&nbsp; [🎥 **Demo Video (3 mins)**]([YOUR_VIDEO_URL]) &nbsp;|&nbsp; [📣 **Social Post**]([YOUR_SOCIAL_POST_URL])
+[🌐 **Live Demo**](https://ais-dev-wuo2gdbdhq7aa4ie75xoms-874611223113.asia-southeast1.run.app) &nbsp;|&nbsp; [💻 **Source Code**](https://github.com/Ishany0/Aurora_app) &nbsp;|&nbsp; [🎥 **Demo Video (5 mins)**](https://youtu.be/fPjA6ARU2Cg) &nbsp;|&nbsp; [📣 **Social Post**]([YOUR_SOCIAL_POST_URL])
 
 ---
 
